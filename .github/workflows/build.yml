@@ -1,0 +1,75 @@
+name: Build Arc Linux Images
+on:
+  workflow_dispatch:
+    inputs:
+      arch:
+        description: '选择目标架构'
+        required: true
+        type: choice
+        options:
+          - x86_64
+          - aarch64
+        default: 'x86_64'
+
+jobs:
+  build:
+    name: build-${{ github.event.inputs.arch }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装系统依赖
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bison flex libssl-dev \
+            bc cpio gzip parted dosfstools mtools grub-efi-amd64-bin \
+            grub-pc-bin xorriso meson ninja-build pkg-config \
+            libarchive-dev libcurl4-openssl-dev libgpgme-dev wget xz-utils \
+            syslinux-utils isolinux
+
+      - name: 安装ARM64交叉编译器
+        if: github.event.inputs.arch == 'aarch64'
+        run: sudo apt-get install -y crossbuild-essential-arm64
+
+      - name: 下载所有源码包
+        run: bash scripts/download-sources.sh
+
+      - name: 编译内核
+        run: |
+          cd kernel
+          if [ "${{ github.event.inputs.arch }}" = "x86_64" ]; then
+            make x86_64_defconfig
+          else
+            export CROSS_COMPILE=aarch64-linux-gnu-
+            export ARCH=arm64
+            make defconfig
+          fi
+          while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            scripts/config -e "${line#CONFIG_}"
+          done < required-config.${{ github.event.inputs.arch }}
+          make olddefconfig
+          make -j$(nproc)
+          cd ..
+
+      - name: 构建根文件系统
+        run: bash scripts/build-rootfs.sh ${{ github.event.inputs.arch }}
+
+      - name: 编译 init
+        run: |
+          make -C init clean
+          make -C init
+          make -C init install DESTDIR="$PWD/rootfs-build/${{ github.event.inputs.arch }}"
+
+      - name: 编译用户空间组件
+        run: bash packages/build-order.sh ${{ github.event.inputs.arch }} "$PWD/rootfs-build/${{ github.event.inputs.arch }}"
+
+      - name: 打包磁盘镜像
+        run: bash scripts/build-image.sh ${{ github.event.inputs.arch }}
+
+      - name: 上传分卷文件
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-linux-${{ github.event.inputs.arch }}-parts
+          path: |
+            ${{ github.event.inputs.arch == 'x86_64' && 'arc-linux-x86_64.iso.part_*' || 'arc-linux-aarch64.img.part_*' }}
