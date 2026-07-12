@@ -38,17 +38,12 @@ jobs:
         run: |
           cd kernel
           if [ "${{ github.event.inputs.arch }}" = "x86_64" ]; then
-            make x86_64_defconfig
+            make KCONFIG_ALLCONFIG=required-config.x86_64 x86_64_defconfig
           else
             export CROSS_COMPILE=aarch64-linux-gnu-
             export ARCH=arm64
-            make defconfig
+            make KCONFIG_ALLCONFIG=required-config.aarch64 defconfig
           fi
-          while IFS= read -r line; do
-            [ -z "$line" ] && continue
-            scripts/config -e "${line#CONFIG_}"
-          done < required-config.${{ github.event.inputs.arch }}
-          make olddefconfig
           make -j$(nproc)
           cd ..
 
@@ -62,14 +57,29 @@ jobs:
           make -C init install DESTDIR="$PWD/rootfs-build/${{ github.event.inputs.arch }}"
 
       - name: 编译用户空间组件
-        run: bash packages/build-order.sh ${{ github.event.inputs.arch }} "$PWD/rootfs-build/${{ github.event.inputs.arch }}"
+        run: |
+          bash packages/build-order.sh \
+            ${{ github.event.inputs.arch }} \
+            "$PWD/rootfs-build/${{ github.event.inputs.arch }}"
 
-      - name: 打包磁盘镜像
-        run: bash scripts/build-image.sh ${{ github.event.inputs.arch }}
+      - name: 打包 x86_64 ISO
+        if: github.event.inputs.arch == 'x86_64'
+        run: bash scripts/make-iso.sh
 
-      - name: 上传分卷文件
+      - name: 打包 aarch64 镜像
+        if: github.event.inputs.arch == 'aarch64'
+        run: bash scripts/make-image.sh
+
+      - name: 上传 x86_64 分卷文件
+        if: github.event.inputs.arch == 'x86_64'
         uses: actions/upload-artifact@v4
         with:
-          name: arc-linux-${{ github.event.inputs.arch }}-parts
-          path: |
-            ${{ github.event.inputs.arch == 'x86_64' && 'arc-linux-x86_64.iso.part_*' || 'arc-linux-aarch64.img.part_*' }}
+          name: arc-linux-x86_64-parts
+          path: arc-linux-x86_64.iso.part_*
+
+      - name: 上传 aarch64 分卷文件
+        if: github.event.inputs.arch == 'aarch64'
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-linux-aarch64-parts
+          path: arc-linux-aarch64.img.part_*
