@@ -23,24 +23,24 @@ echo ">>> 下载源码包..."
 echo ">>> $PWD"
 
 [ -f "glibc-${GLIBC_VER}.tar.gz" ] || \
-  sudo curl -s -O -L "https://ftp.gnu.org/gnu/glibc/glibc-${GLIBC_VER}.tar.gz"
+  sudo curl -O -L "https://ftp.gnu.org/gnu/glibc/glibc-${GLIBC_VER}.tar.gz"
 [ -f "bash-${BASH_VER}.tar.gz" ] || \
-  sudo curl -s -O -L "https://ftp.gnu.org/gnu/bash/bash-${BASH_VER}.tar.gz"
+  sudo curl -O -L "https://ftp.gnu.org/gnu/bash/bash-${BASH_VER}.tar.gz"
 [ -f "coreutils-${COREUTILS_VER}.tar.xz" ] || \
-  sudo curl -s -O -L "https://ftp.gnu.org/gnu/coreutils/coreutils-${COREUTILS_VER}.tar.xz"
+  sudo curl -O -L "https://ftp.gnu.org/gnu/coreutils/coreutils-${COREUTILS_VER}.tar.xz"
 [ -f "openssl-${OPENSSL_VER}.tar.gz" ] || \
-  sudo curl -s -O -L "https://github.com/openssl/openssl/releases/download/openssl-${OPENSSL_VER}/openssl-${OPENSSL_VER}.tar.gz"
+  sudo curl -O -L "https://github.com/openssl/openssl/releases/download/openssl-${OPENSSL_VER}/openssl-${OPENSSL_VER}.tar.gz"
 [ -f "libarchive-${LIBARCHIVE_VER}.tar.xz" ] || \
-  sudo curl -s -O -L "https://github.com/libarchive/libarchive/releases/download/v${LIBARCHIVE_VER}/libarchive-${LIBARCHIVE_VER}.tar.xz"
+  sudo curl -O -L "https://github.com/libarchive/libarchive/releases/download/v${LIBARCHIVE_VER}/libarchive-${LIBARCHIVE_VER}.tar.xz"
 [ -f "curl-${CURL_VER}.tar.xz" ] || \
-  sudo curl -s -O -L "https://curl.se/download/curl-${CURL_VER}.tar.xz"
+  sudo curl -O -L "https://curl.se/download/curl-${CURL_VER}.tar.xz"
 [ -f "gpgme-${GPGME_VER}.tar.bz2" ] || \
-  sudo curl -s -O -L "https://www.gnupg.org/ftp/gcrypt/gpgme/gpgme-${GPGME_VER}.tar.bz2"
+  sudo curl -O -L "https://www.gnupg.org/ftp/gcrypt/gpgme/gpgme-${GPGME_VER}.tar.bz2"
 [ -f "pacman-${PACMAN_VER}.tar.xz" ] || \
-  sudo curl -s -O -L "pacman-${PACMAN_VER}.tar.xz" -L \
+  sudo curl -O -L "pacman-${PACMAN_VER}.tar.xz" -L \
   "https://gitlab.archlinux.org/pacman/pacman/-/releases/v${PACMAN_VER}/downloads/pacman-v${PACMAN_VER}.tar.xz"
 [ -f "util-linux-${UTIL_VER}.tar.gz" ] || \
-  sudo curl -s -O -L "util-linux-${UTIL_VER}.tar.gz" -L \
+  sudo curl -O -L "util-linux-${UTIL_VER}.tar.gz" -L \
   "https://github.com/util-linux/util-linux/archive/refs/tags/v${UTIL_VER}.tar.gz"
 
 # ===== 内核下载与校验 =====
