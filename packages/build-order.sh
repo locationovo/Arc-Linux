@@ -78,8 +78,8 @@ meson setup build --buildtype plain --prefix=/usr -Dpkg-ext=.pkg.tar.zst && meso
 cd "$OLDPWD"
 
 # util-linux
-unpack "util-linux-2.42.2.tar.gz" "util-linux-2.42.2" "tar.gz"
-cd "$BUILD_DIR/util-linux-2.42.2"
+unpack "util-linux-2.42.tar.gz" "util-linux-2.42" "tar.gz"
+cd "$BUILD_DIR/util-linux-2.42"
 UTIL_HOST="${CROSS_COMPILE%-}"
 
 ./configure \
