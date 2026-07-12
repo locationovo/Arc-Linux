@@ -37,10 +37,10 @@ echo ">>> $PWD"
 [ -f "gpgme-${GPGME_VER}.tar.bz2" ] || \
   sudo curl -O -L "https://www.gnupg.org/ftp/gcrypt/gpgme/gpgme-${GPGME_VER}.tar.bz2"
 [ -f "pacman-${PACMAN_VER}.tar.xz" ] || \
-  sudo curl -O -L "pacman-${PACMAN_VER}.tar.xz" -L \
+  sudo curl -L -o "pacman-${PACMAN_VER}.tar.xz" \
   "https://gitlab.archlinux.org/pacman/pacman/-/releases/v${PACMAN_VER}/downloads/pacman-${PACMAN_VER}.tar.xz"
 [ -f "util-linux-${UTIL_VER}.tar.gz" ] || \
-  sudo curl -O -L "util-linux-${UTIL_VER}.tar.gz" -L \
+  sudo curl -L -o "util-linux-${UTIL_VER}.tar.gz" \
   "https://github.com/util-linux/util-linux/archive/refs/tags/v${UTIL_VER}.tar.gz"
 
 # ===== 内核下载与校验 =====
