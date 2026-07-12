@@ -30,7 +30,7 @@ unpack() {
 }
 
 # glibc
-unpack "glibc-2.43.tar.xz" "glibc-2.43" "tar.xz"
+unpack "glibc-2.43.tar.gz" "glibc-2.43" "tar.gz"
 cd "$BUILD_DIR/glibc-2.43" && mkdir -p build && cd build
 ../configure --prefix=/usr --host=$HOST --disable-werror && make -j$JOBS && make install DESTDIR="$SYSROOT"
 cd "$OLDPWD"
@@ -60,7 +60,7 @@ cd "$BUILD_DIR/libarchive-3.8.8"
 cd "$OLDPWD"
 
 # curl
-unpack "curl-8.21.0.tar.xz" "curl-8.21.0" "tar.xz"
+unpack "curl-8.21.0.tar.gz" "curl-8.21.0" "tar.gz"
 cd "$BUILD_DIR/curl-8.21.0"
 ./configure --prefix=/usr --host=$HOST --with-openssl --disable-shared && make -j$JOBS && make install DESTDIR="$SYSROOT"
 cd "$OLDPWD"
