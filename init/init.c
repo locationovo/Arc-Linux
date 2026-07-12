@@ -52,7 +52,8 @@
 #define TTY_RATE        "38400"
 #define TTY_TERM        "linux"
 #define DEV_MODE_TOKEN  "arc-linux.devmode"
-#define PATH_MAX_LEN    256
+#define PATH_MAX_LEN  512
+#define LINE_BUF_SIZE  256
 
 /* ---- globals ---- */
 static volatile sig_atomic_t g_shutdown_pending = 0;
@@ -560,21 +561,18 @@ load_kernel_modules(void)
     if (!fp)
         return;
 
-    char line;
+    char line[LINE_BUF_SIZE];
     char mod_path[PATH_MAX_LEN];
 
     while (fgets(line, sizeof(line), fp)) {
-        /* trim trailing whitespace */
         size_t len = strlen(line);
         while (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r'))
             line[--len] = '\0';
 
-        /* skip empty lines and comments */
-        if (len == 0 || line == '#')
+        if (len == 0 || line[0] == '#')
             continue;
-
-        /* build full path: /lib/modules/<filename> */
-        if (line == '/')
+        
+        if (line[0] == '/')
             snprintf(mod_path, sizeof(mod_path), "%s", line);
         else
             snprintf(mod_path, sizeof(mod_path),
@@ -664,29 +662,26 @@ main(void)
     mount_filesystems();       /* proc, sys, devpts, tmpfs on /tmp, /run */
     mount_fstab();             /* /etc/fstab entries (e.g. /usr, /boot) */
 
-    /* Phase 2 — Device nodes */
-    create_dev_symlinks();     /* /dev/fd, /dev/stdin, /dev/stdout, etc. */
-
-    /* Phase 3 — Host identity */
+    /* Phase 2 — Host identity */
     set_hostname();
     print_os_release();
 
-    /* Phase 4 — Network */
+    /* Phase 3 — Network */
     setup_network();           /* lo + eth0 (requires iproute2) */
 
-    /* Phase 5 — Kernel modules */
+    /* Phase 4 — Kernel modules */
     load_kernel_modules();     /* /etc/modules → finit_module(2) */
 
-    /* Phase 6 — Kernel tuning */
+    /* Phase 5 — Kernel tuning */
     apply_sysctl_hardening();  /* /etc/sysctl.conf */
 
-    /* Phase 7 — Signal handlers */
+    /* Phase 6 — Signal handlers */
     setup_signals();           /* SIGCHLD, SIGINT, SIGUSR1 */
 
-    /* Phase 8 — User rc.d scripts */
+    /* Phase 7 — User rc.d scripts */
     run_rc_scripts("start");
 
-    /* Phase 9 — Spawn login terminals */
+    /* Phase 8 — Spawn login terminals */
     for (int i = 0; i < MAX_TTY; i++) {
         g_ttys[i].tty_num = i + 1;
         g_ttys[i].pid     = 0;
@@ -694,7 +689,7 @@ main(void)
         spawn_getty(&g_ttys[i]);
     }
 
-    /* Phase 10 — Main event loop */
+    /* Phase 9 — Main event loop */
     while (1) {
         sigset_t empty_mask;
 
@@ -727,4 +722,3 @@ main(void)
 
     return 0;
 }
-
