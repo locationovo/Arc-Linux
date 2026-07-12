@@ -7,7 +7,7 @@ SYSROOT="$PWD/rootfs-build/$ARCH"
 mkdir -p "$SYSROOT"/{bin,sbin,lib,usr/{bin,lib,sbin},dev,proc,sys,tmp,etc,var/{lib/pacman,cache/pacman/pkg,run,tmp},home,mnt,root,boot}
 
 cp -r -f rootfs/ "$SYSROOT/"
-sudo chmod +x $SYSROOT/rc.d/*
+sudo chmod +x $SYSROOT/etc/rc.d/*
 
 sudo mknod "$SYSROOT/dev/console" c 5 1 2>/dev/null || true
 sudo mknod "$SYSROOT/dev/null" c 1 3 2>/dev/null || true
