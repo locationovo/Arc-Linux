@@ -19,20 +19,21 @@ GPGME_VER="2.1.2"
 PACMAN_VER="7.1.0"
 
 echo ">>> 下载源码包..."
+echo ">>> $PWD
 
-[ -f "glibc-${GLIBC_VER}.tar.xz" ] || curl -s -O -L "https://ftp.gnu.org/gnu/glibc/glibc-${GLIBC_VER}.tar.gz"
-[ -f "bash-${BASH_VER}.tar.gz" ] || curl -s -O -L "https://ftp.gnu.org/gnu/bash/bash-${BASH_VER}.tar.gz"
-[ -f "coreutils-${COREUTILS_VER}.tar.xz" ] || curl -s -O -L "https://ftp.gnu.org/gnu/coreutils/coreutils-${COREUTILS_VER}.tar.xz"
-[ -f "openssl-${OPENSSL_VER}.tar.gz" ] || curl -s -O -L "https://github.com/openssl/openssl/releases/download/openssl-${OPENSSL_VER}/openssl-${OPENSSL_VER}.tar.gz"
-[ -f "libarchive-${LIBARCHIVE_VER}.tar.xz" ] || curl -s -O -L "https://github.com/libarchive/libarchive/releases/download/v${LIBARCHIVE_VER}/libarchive-${LIBARCHIVE_VER}.tar.xz"
-[ -f "curl-${CURL_VER}.tar.xz" ] || curl -s -O -L "https://curl.se/download/curl-${CURL_VER}.tar.xz"
-[ -f "gpgme-${GPGME_VER}.tar.bz2" ] || curl -s -O -L "https://www.gnupg.org/ftp/gcrypt/gpgme/gpgme-${GPGME_VER}.tar.bz2"
-[ -f "pacman-${PACMAN_VER}.tar.xz" ] || curl -s -O -L "https://gitlab.archlinux.org/pacman/pacman/-/releases/v${PACMAN_VER}/downloads/pacman-v${PACMAN_VER}.tar.xz" -O "pacman-${PACMAN_VER}.tar.xz"
+[ -f "glibc-${GLIBC_VER}.tar.xz" ] || sudo curl -s -O -L "https://ftp.gnu.org/gnu/glibc/glibc-${GLIBC_VER}.tar.gz"
+[ -f "bash-${BASH_VER}.tar.gz" ] || sudo curl -s -O -L "https://ftp.gnu.org/gnu/bash/bash-${BASH_VER}.tar.gz"
+[ -f "coreutils-${COREUTILS_VER}.tar.xz" ] || sudo curl -s -O -L "https://ftp.gnu.org/gnu/coreutils/coreutils-${COREUTILS_VER}.tar.xz"
+[ -f "openssl-${OPENSSL_VER}.tar.gz" ] || sudo curl -s -O -L "https://github.com/openssl/openssl/releases/download/openssl-${OPENSSL_VER}/openssl-${OPENSSL_VER}.tar.gz"
+[ -f "libarchive-${LIBARCHIVE_VER}.tar.xz" ] || sudo curl -s -O -L "https://github.com/libarchive/libarchive/releases/download/v${LIBARCHIVE_VER}/libarchive-${LIBARCHIVE_VER}.tar.xz"
+[ -f "curl-${CURL_VER}.tar.xz" ] || sudo curl -s -O -L "https://curl.se/download/curl-${CURL_VER}.tar.xz"
+[ -f "gpgme-${GPGME_VER}.tar.bz2" ] || sudo curl -s -O -L "https://www.gnupg.org/ftp/gcrypt/gpgme/gpgme-${GPGME_VER}.tar.bz2"
+[ -f "pacman-${PACMAN_VER}.tar.xz" ] || sudo curl -s -O -L "https://gitlab.archlinux.org/pacman/pacman/-/releases/v${PACMAN_VER}/downloads/pacman-v${PACMAN_VER}.tar.xz" -O "pacman-${PACMAN_VER}.tar.xz"
 
 # ===== 内核下载与校验 =====
 echo ">>> 下载 Linux 内核源码..."
 if [ ! -f "linux-${LINUX_KERNEL_VER}.tar.xz" ]; then
-    wget -q "$LINUX_KERNEL_URL"
+    sudo wget -q "$LINUX_KERNEL_URL"
 else
     echo "内核源码包已存在，跳过下载"
 fi
