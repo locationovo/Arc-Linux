@@ -1,0 +1,5 @@
+NAME="Arc Linux"
+VERSION="Semi-stable"
+ID=arc-linux
+PRETTY_NAME="Arc Linux"
+HOME_URL="https://github.com/locationovo/Arc-Linux"

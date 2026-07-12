@@ -4,12 +4,10 @@ set -e
 ARCH=$1
 SYSROOT="$PWD/rootfs-build/$ARCH"
 
-mkdir -p "$SYSROOT"/{bin,sbin,lib,usr/{bin,lib,sbin},dev,proc,sys,tmp,etc,var/{lib/pacman,cache/pacman/pkg},home,mnt,root,boot}
+mkdir -p "$SYSROOT"/{bin,sbin,lib,usr/{bin,lib,sbin},dev,proc,sys,tmp,etc,var/{lib/pacman,cache/pacman/pkg,run,tmp},home,mnt,root,boot}
 
-cp rootfs/passwd "$SYSROOT/etc/"
-cp rootfs/group "$SYSROOT/etc/"
-cp rootfs/fstab "$SYSROOT/etc/"
-cp rootfs/os-release "$SYSROOT/etc/"
+cp -r -f rootfs/ "$SYSROOT/"
+sudo chmod +x $SYSROOT/rc.d/*
 
 sudo mknod "$SYSROOT/dev/console" c 5 1 2>/dev/null || true
 sudo mknod "$SYSROOT/dev/null" c 1 3 2>/dev/null || true

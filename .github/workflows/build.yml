@@ -68,11 +68,11 @@ jobs:
 
       - name: 打包 x86_64 ISO
         if: github.event.inputs.arch == 'x86_64'
-        run: bash scripts/make-iso.sh
+        run: bash scripts/build-image.sh x86_64
 
       - name: 打包 aarch64 镜像
         if: github.event.inputs.arch == 'aarch64'
-        run: bash scripts/make-image.sh
+        run: bash scripts/build-image.sh aarch64
 
       - name: 上传 x86_64 分卷文件
         if: github.event.inputs.arch == 'x86_64'

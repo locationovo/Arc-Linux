@@ -77,4 +77,23 @@ cd "$BUILD_DIR/pacman-7.1.0"
 meson setup build --prefix=/usr -Dpkg-ext=.pkg.tar.zst && meson compile -C build && DESTDIR="$SYSROOT" meson install -C build
 cd "$OLDPWD"
 
+# util-linux
+unpack "util-linux-2.42.2.tar.gz" "util-linux-2.42.2" "tar.gz"
+cd "$BUILD_DIR/util-linux-2.42.2"
+UTIL_HOST="${CROSS_COMPILE%-}"
+
+./configure \
+    --host="$UTIL_HOST" \
+    --prefix=/usr \
+    --sbindir=/sbin \
+    --without-python \
+    --without-systemd \
+    --without-udev \
+    --without-ncurses \
+    --without-tinfo
+
+make -j$JOBS
+make install DESTDIR="$SYSROOT"
+cd "$OLDPWD"
+
 echo ">>> 所有包编译完成"

@@ -17,6 +17,7 @@ LIBARCHIVE_VER="3.8.8"
 CURL_VER="8.21.0"
 GPGME_VER="2.1.2"
 PACMAN_VER="7.1.0"
+UTIL_VER="2.42.2"
 
 echo ">>> 下载源码包..."
 echo ">>> $PWD"
@@ -38,6 +39,9 @@ echo ">>> $PWD"
 [ -f "pacman-${PACMAN_VER}.tar.xz" ] || \
   sudo curl -s -o "pacman-${PACMAN_VER}.tar.xz" -L \
   "https://gitlab.archlinux.org/pacman/pacman/-/releases/v${PACMAN_VER}/downloads/pacman-v${PACMAN_VER}.tar.xz"
+[ -f "util-linux-${UTIL_VER}.tar.gz" ] || \
+  sudo curl -s -o "util-linux-${UTIL_VER}.tar.gz" -L \
+  "https://github.com/util-linux/util-linux/archive/refs/tags/v${UTIL_VER}.tar.gz"
 
 # ===== 内核下载与校验 =====
 echo ">>> 下载 Linux 内核源码..."
