@@ -56,23 +56,23 @@ jobs:
 
       - name: 编译 init
         run: |
-          make -C init clean
-          make -C init
-          make -C init install DESTDIR="$PWD/rootfs-build/${{ github.event.inputs.arch }}"
+          sudo make -C init clean
+          sudo make -C init
+          sudo make -C init install DESTDIR="$PWD/rootfs-build/${{ github.event.inputs.arch }}"
 
       - name: 编译用户空间组件
         run: |
-          bash packages/build-order.sh \
+          sudo bash packages/build-order.sh \
             ${{ github.event.inputs.arch }} \
             "$PWD/rootfs-build/${{ github.event.inputs.arch }}"
 
       - name: 打包 x86_64 ISO
         if: github.event.inputs.arch == 'x86_64'
-        run: bash scripts/build-image.sh x86_64
+        run: sudo bash scripts/build-image.sh x86_64
 
       - name: 打包 aarch64 镜像
         if: github.event.inputs.arch == 'aarch64'
-        run: bash scripts/build-image.sh aarch64
+        run: sudo bash scripts/build-image.sh aarch64
 
       - name: 上传 x86_64 分卷文件
         if: github.event.inputs.arch == 'x86_64'
