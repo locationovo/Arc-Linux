@@ -198,3 +198,7 @@ CONFIG_KALLSYMS=y
 CONFIG_BPF=y
 CONFIG_BPF_SYSCALL=y
 CONFIG_LOCALVERSION="-arc"
+
+# ===== 内置内核命令行 =====
+CONFIG_CMDLINE="console=ttyAMA0 earlycon root=/dev/vda2 rw init=/init"
+CONFIG_CMDLINE_FORCE=y
