@@ -1,8 +1,10 @@
-CC = gcc
+CC ?= gcc
 CFLAGS = -static -Os -s -Wall -Wextra
 TARGET = init
 SRC = init.c
 OBJ = init.o
+
+DESTDIR ?= .
 
 .PHONY: all clean install
 
