@@ -83,7 +83,7 @@ jobs:
 
           make -C init clean
           make -C init
-          make -C init install DESTDIR="$ROOTFS"
+          sudo make -C init install DESTDIR="$ROOTFS"
 
       - name: 编译用户空间组件
         run: |
