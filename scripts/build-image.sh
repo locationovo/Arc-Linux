@@ -17,12 +17,12 @@ if [ "$ARCH" = "x86_64" ]; then
     mkdir -p "$ISO_ROOT/boot/grub"
 
     echo ">>> 复制文件系统..."
-    sudo cp -a "$SYSROOT"/* "$ISO_ROOT/"
+    sudo rsync -a "$SYSROOT"/ "$ISO_ROOT"/
     sudo cp "$KERNEL_IMAGE" "$ISO_ROOT/boot/vmlinuz"
     sudo cp boot/grub.cfg "$ISO_ROOT/boot/grub/"
 
     echo ">>> 生成可启动ISO..."
-    sudo grub-mkrescue -o "$ISO" "$ISO_ROOT" -- -volid "ARC_LINUX" 2>/dev/null
+    sudo grub-mkrescue -o "$ISO" "$ISO_ROOT" -- -volid "ARC_LINUX"
 
     sudo rm -rf "$ISO_ROOT"
 
@@ -31,7 +31,7 @@ if [ "$ARCH" = "x86_64" ]; then
     rm -f "$ISO"
 
     echo ">>> 分卷文件已生成:"
-    ls -lh arc-linux-x86_64.iso.part_*    
+    ls -lh arc-linux-x86_64.iso.part_*
 
 elif [ "$ARCH" = "aarch64" ]; then
     KERNEL_IMAGE="$PWD/kernel/arch/arm64/boot/Image"
@@ -62,12 +62,14 @@ elif [ "$ARCH" = "aarch64" ]; then
     sudo mkdir -p /mnt/boot/efi
     sudo mount "$EFI_PART" /mnt/boot/efi
 
-    echo ">>> 复制文件系统..."
-    sudo cp -a "$SYSROOT"/* /mnt/
-    sudo mkdir -p /mnt/boot
-    sudo cp "$KERNEL_IMAGE" /mnt/boot/vmlinuz
+    echo ">>> 复制文件系统到根分区..."
+    sudo rsync -a "$SYSROOT"/ /mnt/
 
-    echo ">>> ARM64:跳过 GRUB，使用 UEFI 直接启动内核"
+    echo ">>> 安装内核到 EFI 分区（EFI Stub，无需 GRUB）..."
+    sudo mkdir -p /mnt/boot/efi/EFI/BOOT
+    sudo cp "$KERNEL_IMAGE" /mnt/boot/efi/EFI/BOOT/BOOTAA64.EFI
+
+    echo ">>> 内核命令行已内置在 CONFIG_CMDLINE 中，无需外部配置"
 
     sudo umount /mnt/boot/efi
     sudo umount /mnt
@@ -79,5 +81,4 @@ elif [ "$ARCH" = "aarch64" ]; then
 
     echo ">>> 分卷文件已生成:"
     ls -lh arc-linux-aarch64.img.part_*
-    echo ""
 fi
