@@ -13,13 +13,12 @@ if [ "$ARCH" = "x86_64" ]; then
 
     echo ">>> 创建ISO根目录..."
     ISO_ROOT="$PWD/iso-root"
-    rm -rf "$ISO_ROOT"
     mkdir -p "$ISO_ROOT/boot/grub"
 
     echo ">>> 复制文件系统..."
     sudo rsync -a "$SYSROOT"/ "$ISO_ROOT"/
     sudo cp "$KERNEL_IMAGE" "$ISO_ROOT/boot/vmlinuz"
-    sudo cp boot/grub.cfg "$ISO_ROOT/boot/grub/"
+    sudo cp boot/grub.cfg "$ISO_ROOT/boot/grub/custom.cfg"
 
     echo ">>> 生成可启动ISO..."
     sudo grub-mkrescue -o "$ISO" "$ISO_ROOT" -- -volid "ARC_LINUX"
