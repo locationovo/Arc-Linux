@@ -98,7 +98,7 @@ jobs:
         run: |
           ROOTFS="$PWD/rootfs-build/${{ github.event.inputs.arch }}"
           cd "$ROOTFS"
-          mkdir -p dev proc sys tmp run etc
+          sudo mkdir -p dev proc sys tmp run etc
           find . -mindepth 1 -print0 | cpio --null -ov --format=newc | gzip -9 > ../initramfs.img
 
       - name: 打包x86_64 ISO
