@@ -87,9 +87,9 @@ mount_fs(const char *source, const char *target, const char *fstype,
         log_msg("init: mount %s failed: %s\n", target, strerror(errno));
 }
 
-/* ---- devmode detection ---- */
+/* ---- development mode check ---- */
 static int
-is_devmode(void)
+is_development_mode(void)
 {
     static int cached = -1;
     if (cached >= 0)
@@ -129,8 +129,13 @@ mount_filesystems(void)
              MS_NOSUID | MS_NODEV | MS_NOEXEC, NULL);
     mount_fs("sysfs", "/sys", "sysfs",
              MS_NOSUID | MS_NODEV | MS_NOEXEC, NULL);
-    mount_fs("devtmpfs", "/dev", "devtmpfs",
-             MS_NOSUID | MS_NOEXEC, "mode=0755");
+
+    /*
+     * devtmpfs is auto-mounted by the kernel before /init runs,
+     * via CONFIG_DEVTMPFS_MOUNT=y. /dev is already available,
+     * so we skip the mount call and proceed directly.
+     */
+
     mount_fs("tmpfs", "/run", "tmpfs",
              MS_NOSUID | MS_NODEV, "mode=0755,size=10%");
     mount_fs("tmpfs", "/tmp", "tmpfs",
@@ -194,7 +199,7 @@ sysctl_write(const char *path, const char *value)
 static void
 apply_sysctl_hardening(void)
 {
-    int devmode = is_devmode();
+    int devmode = is_development_mode();
 
     sysctl_write("/proc/sys/kernel/randomize_va_space", "2");
 
@@ -645,7 +650,7 @@ main(void)
 
     umask(022);
 
-    if (!is_devmode()) {
+    if (!is_development_mode()) {
         struct rlimit rl = { 0, 0 };
         setrlimit(RLIMIT_CORE, &rl);
     }
