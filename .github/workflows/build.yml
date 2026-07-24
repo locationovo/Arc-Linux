@@ -32,9 +32,10 @@ jobs:
             wget xz-utils curl zstd rsync \
             libncurses-dev libtinfo-dev dwarves \
             syslinux-utils isolinux
-      - name: 安装 ARM64 交叉编译依赖
-       if: github.event.inputs.arch == 'aarch64'
-       run: |
+
+      - name: 安装ARM64交叉编译依赖
+        if: github.event.inputs.arch == 'aarch64'
+        run: |
           sudo apt-get install -y crossbuild-essential-arm64
           sudo dpkg --add-architecture arm64
           sudo apt-get update
@@ -59,7 +60,7 @@ jobs:
       - name: 构建根文件系统
         run: bash scripts/build-rootfs.sh ${{ github.event.inputs.arch }}
 
-      - name: 编译 init（静态链接）
+      - name: 编译init（静态链接）
         run: |
           ROOTFS="$PWD/rootfs-build/${{ github.event.inputs.arch }}"
           mkdir -p "$ROOTFS"
@@ -80,33 +81,33 @@ jobs:
             ${{ github.event.inputs.arch }} \
             "$PWD/rootfs-build/${{ github.event.inputs.arch }}"
 
-      - name: 补齐 rootfs 骨架并打包 initramfs
+      - name: 打包 initramfs
         run: |
           ROOTFS="$PWD/rootfs-build/${{ github.event.inputs.arch }}"
           cd "$ROOTFS"
           mkdir -p dev proc sys tmp run etc
           find . -mindepth 1 -print0 | cpio --null -ov --format=newc | gzip -9 > ../initramfs.img
 
-      - name: 打包 x86_64 ISO
+      - name: 打包x86_64 ISO
         if: github.event.inputs.arch == 'x86_64'
         run: |
+          sudo mkdir -p iso-root/boot
           sudo cp rootfs-build/initramfs.img iso-root/boot/initramfs.img
           sudo bash scripts/build-image.sh x86_64
 
-      - name: 打包 aarch64 镜像
+      - name: 打包aarch64镜像
         if: github.event.inputs.arch == 'aarch64'
         run: |
-          sudo cp rootfs-build/initramfs.img iso-root/boot/initramfs.img
           sudo bash scripts/build-image.sh aarch64
 
-      - name: 上传 x86_64 分卷文件
+      - name: 上传x86_64分卷文件
         if: github.event.inputs.arch == 'x86_64'
         uses: actions/upload-artifact@v4
         with:
           name: arc-linux-x86_64-parts
           path: arc-linux-x86_64.iso.part_*
 
-      - name: 上传 aarch64 分卷文件
+      - name: 上传aarch64分卷文件
         if: github.event.inputs.arch == 'aarch64'
         uses: actions/upload-artifact@v4
         with:
