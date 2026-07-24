@@ -1,0 +1,13 @@
+Copyright (C) 2026 locationovo
+
+本发行版是一个由多个独立软件包组成的集合体
+整体编排和配置文件的版权归上述版权所有者所有
+并遵循GNU General Public License v3.0 or later发布
+
+本发行版所包含的各软件包，其版权归各自原始作者所有
+具体的许可证信息，请查看 /usr/share/licenses/ 目录下各个软件包对应的子目录
+
+对于所有采用GPL/LGPL许可证的软件，其完整对应的源代码
+可通过https://gitHub.com/locationovo/Arc-Linux/SOURCE获取
+
+本发行版按“原样”提供，不提供任何明示或暗示的担保

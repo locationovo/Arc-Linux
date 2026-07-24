@@ -104,8 +104,8 @@ jobs:
       - name: 打包x86_64 ISO
         if: github.event.inputs.arch == 'x86_64'
         run: |
-          sudo mkdir -p iso-root/boot
-          sudo cp rootfs-build/initramfs.img iso-root/boot/initramfs.img
+          sudo mkdir -p rootfs-build/x86_64/boot
+          sudo cp rootfs-build/initramfs.img rootfs-build/x86_64/boot/initramfs.img
           sudo bash scripts/build-image.sh x86_64
 
       - name: 打包aarch64镜像
