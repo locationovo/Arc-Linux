@@ -1,4 +1,5 @@
 name: Build Arc Linux Images
+
 on:
   workflow_dispatch:
     inputs:
@@ -15,23 +16,24 @@ jobs:
   build:
     name: build-${{ github.event.inputs.arch }}
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
-    name: 安装系统依赖
-    run: |
+      - name: 安装系统依赖
+        run: |
           sudo apt-get update
           sudo apt-get install -y \
-          build-essential bison flex libssl-dev libelf-dev \
-          bc cpio gzip parted dosfstools mtools \
-          grub-efi-amd64-bin grub-pc-bin xorriso \
-          meson ninja-build pkg-config \
-          libarchive-dev libcurl4-openssl-dev libgpgme-dev \
-          wget xz-utils curl zstd rsync \
-          libncurses5 libncurses-dev libncursesw5-dev libtinfo-dev dwarves \
-          syslinux-utils isolinux
+            build-essential bison flex libssl-dev libelf-dev \
+            bc cpio gzip parted dosfstools mtools \
+            grub-efi-amd64-bin grub-pc-bin xorriso \
+            meson ninja-build pkg-config \
+            libarchive-dev libcurl4-openssl-dev libgpgme-dev \
+            wget xz-utils curl zstd rsync \
+            libncurses5 libncurses-dev libncursesw5-dev libtinfo-dev dwarves \
+            syslinux-utils isolinux
 
-      - name: 安装ARM64交叉编译器
+      - name: 安装 ARM64 交叉编译器
         if: github.event.inputs.arch == 'aarch64'
         run: sudo apt-get install -y crossbuild-essential-arm64
 
@@ -54,11 +56,20 @@ jobs:
       - name: 构建根文件系统
         run: bash scripts/build-rootfs.sh ${{ github.event.inputs.arch }}
 
-      - name: 编译 init
+      - name: 编译 init（静态链接）
         run: |
-          sudo make -C init clean
-          sudo make -C init
-          sudo make -C init install DESTDIR="$PWD/rootfs-build/${{ github.event.inputs.arch }}"
+          ROOTFS="$PWD/rootfs-build/${{ github.event.inputs.arch }}"
+          mkdir -p "$ROOTFS"
+
+          if [ "${{ github.event.inputs.arch }}" = "aarch64" ]; then
+            export CROSS_COMPILE=aarch64-linux-gnu-
+            export ARCH=arm64
+            export CC=aarch64-linux-gnu-gcc
+          fi
+
+          make -C init clean
+          make -C init
+          make -C init install DESTDIR="$ROOTFS"
 
       - name: 编译用户空间组件
         run: |
@@ -66,13 +77,24 @@ jobs:
             ${{ github.event.inputs.arch }} \
             "$PWD/rootfs-build/${{ github.event.inputs.arch }}"
 
+      - name: 补齐 rootfs 骨架并打包 initramfs
+        run: |
+          ROOTFS="$PWD/rootfs-build/${{ github.event.inputs.arch }}"
+          cd "$ROOTFS"
+          mkdir -p dev proc sys tmp run etc
+          find . -mindepth 1 -print0 | cpio --null -ov --format=newc | gzip -9 > ../initramfs.img
+
       - name: 打包 x86_64 ISO
         if: github.event.inputs.arch == 'x86_64'
-        run: sudo bash scripts/build-image.sh x86_64
+        run: |
+          sudo cp rootfs-build/initramfs.img iso-root/boot/initramfs.img
+          sudo bash scripts/build-image.sh x86_64
 
       - name: 打包 aarch64 镜像
         if: github.event.inputs.arch == 'aarch64'
-        run: sudo bash scripts/build-image.sh aarch64
+        run: |
+          sudo cp rootfs-build/initramfs.img iso-root/boot/initramfs.img
+          sudo bash scripts/build-image.sh aarch64
 
       - name: 上传 x86_64 分卷文件
         if: github.event.inputs.arch == 'x86_64'
